@@ -11,7 +11,8 @@ import "github.com/sgreben/sshtunnel"
 - [Get it](#get-it)
 - [Use it](#use-it)
 	- [Docs](#docs)
-	- [Example](#example)
+	- [Toy example](#toy-example)
+	- [Bigger example](#bigger-example)
 - [Limitations](#limitations)
 
 ## Get it
@@ -26,7 +27,7 @@ go get -u "github.com/sgreben/sshtunnel"
 
 [![](https://godoc.org/github.com/sgreben/sshtunnel?status.svg)](http://godoc.org/github.com/sgreben/sshtunnel)
 
-### Example
+### Toy example
 
 ```go
 package main
@@ -40,6 +41,7 @@ import (
 )
 
 func main() {
+	// Connect to "google.com:80" via a tunnel to "ubuntu@my-ssh-server-host:22"
 	keyPath := "private-key.pem"
 	tunnelConfig := sshtunnel.Config{
 		SSHAddr: "my-ssh-server-host:22",
@@ -48,16 +50,19 @@ func main() {
 			Keys:     []sshtunnel.ConfigAuthKey{{Path: &keyPath}},
 		},
 	}
-	// connect to "google.com:80" via a tunnel to "ubuntu@my-ssh-server-host:22"
 	conn, _, err := sshtunnel.Dial("tcp", "google.com:80", &tunnelConfig)
 	if err != nil {
 		panic(err)
 	}
-	// do things with conn
+	// Do things with conn
 	fmt.Fprintln(conn, "GET /")
 	io.Copy(os.Stdout, conn)
 }
 ```
+
+### Bigger example
+
+See [docker-compose-hosts](https://github.com/sgreben/docker-compose-hosts).
 
 ## Limitations
 
