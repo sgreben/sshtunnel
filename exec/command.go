@@ -8,11 +8,17 @@ import (
 	"github.com/google/shlex"
 )
 
+// CommandTemplateOpenSSHText is a command template text for the openssh `ssh` client binary.
+const CommandTemplateOpenSSHText = `ssh -nNT -L "{{.LocalPort}}:{{.RemoteAddr}}" -p "{{.SSHPort}}"  "{{.User}}@{{.SSHHost}}" {{.ExtraArgs}}`
+
 // CommandTemplateOpenSSH is a command template for the openssh `ssh` client binary.
-var CommandTemplateOpenSSH = mustParse(`ssh -nNT -L "{{.LocalPort}}:{{.RemoteAddr}}" -p "{{.SSHPort}}"  "{{.User}}@{{.SSHHost}}" {{.ExtraArgs}}`)
+var CommandTemplateOpenSSH = mustParse(CommandTemplateOpenSSHText)
+
+// CommandTemplatePuTTYText is a command template text for the PuTTY client.
+const CommandTemplatePuTTYText = `putty -ssh -NT "{{.User}}@{{.SSHHost}}" -P "{{.SSHPort}}"  -L "{{.LocalPort}}:{{.RemoteAddr}}" {{.ExtraArgs}}`
 
 // CommandTemplatePuTTY is a command template for the PuTTY client.
-var CommandTemplatePuTTY = mustParse(`putty -ssh -NT "{{.User}}@{{.SSHHost}}" -P "{{.SSHPort}}"  -L "{{.LocalPort}}:{{.RemoteAddr}}" {{.ExtraArgs}}`)
+var CommandTemplatePuTTY = mustParse(CommandTemplatePuTTYText)
 
 type commandTemplateData struct {
 	LocalPort  string
