@@ -46,12 +46,12 @@ func main() {
 	keyPath := "private-key.pem"
 	authConfig := sshtunnel.ConfigAuth{
 		Keys:     []sshtunnel.KeySource{{Path: &keyPath}},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 	sshAuthMethods, _ := authConfig.Methods()
 	clientConfig := ssh.ClientConfig{
 		User: "ubuntu",
 		Auth: sshAuthMethods,
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 	tunnelConfig := sshtunnel.Config{
 		SSHAddr: "my-ssh-server-host:22",
