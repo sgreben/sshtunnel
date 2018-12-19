@@ -4,13 +4,11 @@
 
 Go library providing a dialer for SSH-tunneled TCP and Unix domain socket connections. Please note the [**limitations**](#limitations) below.
 
-```go
-import "github.com/sgreben/sshtunnel"
-```
 
 - [Get it](#get-it)
 - [Use it](#use-it)
 	- [Docs](#docs)
+	- [If you have an existing SSH connection...](#if-you-have-an-existing-ssh-connection)
 	- [Toy example](#toy-example)
 	- [Bigger example](#bigger-example)
 - [Limitations](#limitations)
@@ -23,9 +21,20 @@ go get -u "github.com/sgreben/sshtunnel"
 
 ## Use it
 
+```go
+import "github.com/sgreben/sshtunnel"
+```
+
 ### Docs
 
 [![](https://godoc.org/github.com/sgreben/sshtunnel?status.svg)](http://godoc.org/github.com/sgreben/sshtunnel)
+
+
+### If you have an existing SSH connection...
+
+You can directly use the [`sshtunnel.DialTCP` and `sshtunnel.DialUnix` DialFuncs](https://godoc.org/github.com/sgreben/sshtunnel#DialFunc) to obtain a `net.Conn` that goes through the tunnel.
+
+The other functions (`Dial*`, `ReDial*`, `Listen*`) provide additional convenience features such as redialling dropped connections, or serving the tunnel locally.
 
 ### Toy example
 
