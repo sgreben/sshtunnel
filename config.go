@@ -12,17 +12,14 @@ import (
 
 // Config is an SSH tunnel configuration
 //
-// When `SSHConfig` is set, only the `SSHAddr` field in this struct is required.
 // When `SSHConn` is set to a non-nil net.Conn, that connection is reused instead of opening a new one.
 type Config struct {
 	// SSHAddr is the host:port address of the SSH server (required)
 	SSHAddr string
-	// Auth contains the authentication settings (required if SSHConfig not set)
-	Auth ConfigAuth
+	// SSHClient is the ssh.Client config (required)
+	SSHClient *ssh.ClientConfig
 	// SSHConn is a pre-existing connection to an SSH server (optional)
 	SSHConn net.Conn
-	// SSHConfig is a raw ssh.Client config
-	SSHConfig *ssh.ClientConfig
 }
 
 // ConfigBackoff is an exponential back-off configuration
@@ -36,24 +33,23 @@ type ConfigBackoff struct {
 	MaxAttempts int
 }
 
-// ConfigAuth is the authentication configuration for an SSH tunnel
+// ConfigAuth is an authentication configuration for an SSH tunnel.
 type ConfigAuth struct {
-	UserName string
 	Password *string
-	SSHAgent *ConfigAuthSSHAgent
-	Keys     []ConfigAuthKey
+	SSHAgent *ConfigSSHAgent
+	Keys     []KeySource
 }
 
-// ConfigAuthSSHAgent is the configuration for an ssh-agent connection
-type ConfigAuthSSHAgent struct {
+// ConfigSSHAgent is the configuration for an ssh-agent connection
+type ConfigSSHAgent struct {
 	Addr       net.Addr
 	Passphrase *[]byte
 }
 
-// ConfigAuthKey is the configuration of an ssh key
+// KeySource is the configuration of an ssh key
 // Either Signer, or one of PEM and Path must be set.
 // If PEM or Path are set and the referred key is encrypted, Passphrase must also be set.
-type ConfigAuthKey struct {
+type KeySource struct {
 	PEM        *[]byte
 	Path       *string
 	Passphrase *[]byte
@@ -89,7 +85,7 @@ func (a ConfigAuth) Methods() (out []ssh.AuthMethod, err error) {
 }
 
 // Keys obtains and returns all keys from the configured ssh agent
-func (a ConfigAuthSSHAgent) Keys() ([]ssh.Signer, error) {
+func (a ConfigSSHAgent) Keys() ([]ssh.Signer, error) {
 	conn, err := net.Dial(a.Addr.Network(), a.Addr.String())
 	if err != nil {
 		return nil, err
@@ -109,7 +105,7 @@ func (a ConfigAuthSSHAgent) Keys() ([]ssh.Signer, error) {
 }
 
 // Key obtains and returns the configured key
-func (a ConfigAuthKey) Key() (ssh.Signer, error) {
+func (a KeySource) Key() (ssh.Signer, error) {
 	switch {
 	case a.Signer != nil:
 		return a.Signer, nil

@@ -37,18 +37,7 @@ func DialContext(ctx context.Context, network, addr string, config *Config) (net
 		return nil, nil, fmt.Errorf("unsupported network: %q", network)
 	}
 	sshAddr := withDefaultPort(config.SSHAddr, "22")
-	auth, err := config.Auth.Methods()
-	if err != nil {
-		return nil, nil, err
-	}
-	sshConfig := config.SSHConfig
-	if sshConfig == nil {
-		sshConfig = &ssh.ClientConfig{
-			Auth:            auth,
-			User:            config.Auth.UserName,
-			HostKeyCallback: ssh.InsecureIgnoreHostKey(), // TODO: do something else here
-		}
-	}
+	sshConfig := config.SSHClient
 	connectSSH := func(ctx context.Context) (*ssh.Client, chan error, error) {
 		return dialSSH(ctx, sshAddr, sshConfig)
 	}
@@ -112,6 +101,7 @@ func dialSSH(ctx context.Context, sshAddr string, sshConfig *ssh.ClientConfig) (
 }
 
 // DialTCP opens a tunneled connection to a remote TCP socket
+// The given SSH client must already have an open connection.
 var DialTCP DialFunc = func(client *ssh.Client, addr string) (net.Conn, error) {
 	host, port, err := splitHostPortInt(addr)
 	if err != nil {
@@ -137,6 +127,7 @@ var DialTCP DialFunc = func(client *ssh.Client, addr string) (net.Conn, error) {
 }
 
 // DialUnix opens a tunneled connection to a remote unix domain socket
+// The given SSH client must already have an open connection.
 var DialUnix DialFunc = func(client *ssh.Client, addr string) (net.Conn, error) {
 	// See https://github.com/openssh/openssh-portable/blob/master/PROTOCOL
 	msg := struct {

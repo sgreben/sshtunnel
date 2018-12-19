@@ -37,18 +37,25 @@ import (
 	"io"
 	"os"
 
+	"golang.org/x/crypto/ssh"
 	"github.com/sgreben/sshtunnel"
 )
 
 func main() {
 	// Connect to "google.com:80" via a tunnel to "ubuntu@my-ssh-server-host:22"
 	keyPath := "private-key.pem"
+	authConfig := sshtunnel.ConfigAuth{
+		Keys:     []sshtunnel.KeySource{{Path: &keyPath}},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+	sshAuthMethods, _ := authConfig.Methods()
+	clientConfig := ssh.ClientConfig{
+		User: "ubuntu",
+		Auth: sshAuthMethods,
+	}
 	tunnelConfig := sshtunnel.Config{
 		SSHAddr: "my-ssh-server-host:22",
-		Auth: sshtunnel.ConfigAuth{
-			UserName: "ubuntu",
-			Keys:     []sshtunnel.ConfigAuthKey{{Path: &keyPath}},
-		},
+		SSHClient: &clientConfig,
 	}
 	conn, _, err := sshtunnel.Dial("tcp", "google.com:80", &tunnelConfig)
 	if err != nil {
@@ -66,5 +73,4 @@ See [docker-compose-hosts](https://github.com/sgreben/docker-compose-hosts).
 
 ## Limitations
 
-- **Host key verification is disabled** when using the "simple config", and can only be configured when using a raw `ssh.ClientConfig`.
 - **No tests**; want some - write some.
