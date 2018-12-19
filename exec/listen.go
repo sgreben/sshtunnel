@@ -5,43 +5,47 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/sgreben/sshtunnel/backoff"
 	"github.com/sgreben/sshtunnel/connpipe"
 )
 
 // Listen is ListenContext with context.Background()
-func Listen(laddr net.Addr, network, addr string, config *Config, reconnectBackoff backoff.Config) (net.Listener, chan error, error) {
-	return ListenContext(context.Background(), laddr, network, addr, config, reconnectBackoff)
+func Listen(laddr net.Addr, raddr string, config *Config) (net.Listener, <-chan error, error) {
+	return ListenContext(context.Background(), laddr, raddr, config)
 }
 
 // ListenContext serves an SSH tunnel to a remote address on the given local network address `laddr`.
 // The remote endpoint of the tunneled connections is given by the network and addr parameters.
-//
-// See func ReDial for a description of the network, addr, config and reconnectBackoff
-// parameters.
-func ListenContext(ctx context.Context, laddr net.Addr, network, addr string, config *Config, reconnectBackoff backoff.Config) (net.Listener, chan error, error) {
+func ListenContext(ctx context.Context, laddr net.Addr, raddr string, config *Config) (net.Listener, <-chan error, error) {
 	listener, err := net.Listen(laddr.Network(), laddr.String())
 	if err != nil {
 		return nil, nil, fmt.Errorf("listen on %s://%s: %v", laddr.Network(), laddr.String(), err)
 	}
-	tunnelConnsCh, tunnelConnsErrCh := ReDialContext(ctx, network, addr, config, reconnectBackoff)
 	listenerConnsCh, _ := listenerConns(ctx, listener)
+	tunnelConn := func(ctx context.Context) (net.Conn, <-chan error, error) {
+		return DialContext(ctx, raddr, config)
+	}
 	errCh := make(chan error, 1)
 	handleListenerConn := func(listenerConn net.Conn) {
 		ctxConn, cancel := context.WithCancel(ctx)
 		defer listenerConn.Close()
 		defer cancel()
-		for listenerConn.RemoteAddr() != net.Addr(nil) {
-			select {
-			case err := <-tunnelConnsErrCh:
-				errCh <- err
-				return
-			case <-ctx.Done():
-				errCh <- ctx.Err()
-				return
-			case tunnelConn := <-tunnelConnsCh:
-				connpipe.WithContext(ctxConn, tunnelConn, listenerConn)
-			}
+		tunnelConn, tunnelConnErrCh, err := tunnelConn(ctxConn)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		pipeDone := make(chan bool, 1)
+		go func() {
+			connpipe.WithContext(ctxConn, tunnelConn, listenerConn)
+			pipeDone <- true
+		}()
+		select {
+		case <-pipeDone:
+			return
+		case err := <-tunnelConnErrCh:
+			errCh <- err
+		case <-ctx.Done():
+			errCh <- ctx.Err()
 		}
 	}
 	go func() {
@@ -60,7 +64,7 @@ func ListenContext(ctx context.Context, laddr net.Addr, network, addr string, co
 	return listener, errCh, err
 }
 
-func listenerConns(ctx context.Context, listener net.Listener) (<-chan net.Conn, chan error) {
+func listenerConns(ctx context.Context, listener net.Listener) (<-chan net.Conn, <-chan error) {
 	connCh := make(chan net.Conn)
 	errCh := make(chan error)
 	go func() {

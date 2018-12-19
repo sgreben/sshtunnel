@@ -1,4 +1,4 @@
-package sshtunnel
+package connpipe
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-func connPipeContext(ctx context.Context, a net.Conn, b net.Conn) {
+func WithContext(ctx context.Context, a net.Conn, b net.Conn) {
 	var wg sync.WaitGroup
 	ctxAB, cancelAB := context.WithCancel(ctx)
 	copyAB := make(chan error)

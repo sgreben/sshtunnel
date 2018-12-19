@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"time"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
@@ -20,17 +19,6 @@ type Config struct {
 	SSHClient *ssh.ClientConfig
 	// SSHConn is a pre-existing connection to an SSH server (optional)
 	SSHConn net.Conn
-}
-
-// ConfigBackoff is an exponential back-off configuration
-// The back-off factor is currently fixed at 2.
-type ConfigBackoff struct {
-	// Min is the minimum back-off delay (required)
-	Min time.Duration
-	// Max is the maximum back-off delay (required)
-	Max time.Duration
-	// MaxAttempts is the maximum total number of attempts (required)
-	MaxAttempts int
 }
 
 // ConfigAuth is an authentication configuration for an SSH tunnel.
