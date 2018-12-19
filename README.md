@@ -11,7 +11,7 @@ Go library providing a dialer for SSH-tunneled TCP and Unix domain socket connec
 	- [If you have an existing SSH connection...](#if-you-have-an-existing-ssh-connection)
 	- [Toy example (native)](#toy-example-native)
 	- [Toy example (external client)](#toy-example-external-client)
-	- [Bigger example](#bigger-example)
+	- [Bigger examples](#bigger-examples)
 - [Limitations](#limitations)
 
 ## Get it
@@ -125,9 +125,13 @@ func main() {
 }
 ```
 
-### Bigger example
+### Bigger examples
 
-See [docker-compose-hosts](https://github.com/sgreben/docker-compose-hosts).
+Projects using this library:
+
+
+- [docker-compose-hosts](https://github.com/sgreben/docker-compose-hosts).
+- [with-ssh-docker-socket](https://github.com/sgreben/with-ssh-docker-socket).
 
 ## Limitations
 
