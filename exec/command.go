@@ -9,13 +9,13 @@ import (
 )
 
 // CommandTemplateOpenSSHText is a command template text for the openssh `ssh` client binary.
-const CommandTemplateOpenSSHText = `ssh -nNT -L "{{.LocalPort}}:{{.RemoteAddr}}" -p "{{.SSHPort}}"  "{{.User}}@{{.SSHHost}}" {{.ExtraArgs}}`
+const CommandTemplateOpenSSHText = `ssh -nNT -L "{{.LocalIP}}:{{.LocalPort}}:{{.RemoteAddr}}" -p "{{.SSHPort}}"  "{{.User}}@{{.SSHHost}}" {{.ExtraArgs}}`
 
 // CommandTemplateOpenSSH is a command template for the openssh `ssh` client binary.
 var CommandTemplateOpenSSH = mustParse(CommandTemplateOpenSSHText)
 
 // CommandTemplatePuTTYText is a command template text for the PuTTY client.
-const CommandTemplatePuTTYText = `putty -ssh -NT "{{.User}}@{{.SSHHost}}" -P "{{.SSHPort}}"  -L "{{.LocalPort}}:{{.RemoteAddr}}" {{.ExtraArgs}}`
+const CommandTemplatePuTTYText = `putty -ssh -NT "{{.User}}@{{.SSHHost}}" -P "{{.SSHPort}}"  -L "{{.LocalIP}}:{{.LocalPort}}:{{.RemoteAddr}}" {{.ExtraArgs}}`
 
 // CommandTemplatePuTTY is a command template for the PuTTY client.
 var CommandTemplatePuTTY = mustParse(CommandTemplatePuTTYText)
