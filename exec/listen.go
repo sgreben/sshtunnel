@@ -42,7 +42,10 @@ func ListenContext(ctx context.Context, laddr net.Addr, raddr string, config *Co
 		select {
 		case <-pipeDone:
 			return
-		case err := <-tunnelConnErrCh:
+		case err, ok := <-tunnelConnErrCh:
+			if !ok {
+				return
+			}
 			errCh <- err
 		case <-ctx.Done():
 			errCh <- ctx.Err()
@@ -56,7 +59,10 @@ func ListenContext(ctx context.Context, laddr net.Addr, raddr string, config *Co
 			case <-ctx.Done():
 				errCh <- ctx.Err()
 				return
-			case listenerConn := <-listenerConnsCh:
+			case listenerConn, ok := <-listenerConnsCh:
+				if !ok {
+					return
+				}
 				go handleListenerConn(listenerConn)
 			}
 		}
