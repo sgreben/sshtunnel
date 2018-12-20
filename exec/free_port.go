@@ -6,9 +6,9 @@ import (
 	"strconv"
 )
 
-func guessFreePortTCP() (string, int, error) {
+func guessFreePortTCP(ip net.IP) (string, int, error) {
 	const tcpNet = "tcp"
-	listener, err := net.ListenTCP(tcpNet, &net.TCPAddr{})
+	listener, err := net.ListenTCP(tcpNet, &net.TCPAddr{IP: ip})
 	if err != nil {
 		return "", 0, fmt.Errorf("open temporary listener: %v", err)
 	}

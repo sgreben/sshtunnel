@@ -21,6 +21,7 @@ const CommandTemplatePuTTYText = `putty -ssh -NT "{{.User}}@{{.SSHHost}}" -P "{{
 var CommandTemplatePuTTY = mustParse(CommandTemplatePuTTYText)
 
 type commandTemplateData struct {
+	LocalIP    string
 	LocalPort  string
 	RemoteAddr string
 	User       string

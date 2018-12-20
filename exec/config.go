@@ -1,6 +1,7 @@
 package sshtunnel
 
 import (
+	"net"
 	"os/exec"
 	"text/template"
 
@@ -25,4 +26,6 @@ type Config struct {
 	CommandConfig func(*exec.Cmd) error
 	// Backoff config used when connecting to the external client.
 	Backoff backoff.Config
+	// Local IP address to listen on (optional)
+	LocalIP *net.IP
 }
