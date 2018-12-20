@@ -16,7 +16,9 @@ type Config struct {
 	MaxAttempts int
 }
 
-func Run(ctx context.Context, f func() error, config Config) error {
+// Run tries to run func f with the configured back-off until it either
+// returns a nil error, or the maximum number of attempts is reached.
+func (config Config) Run(ctx context.Context, f func() error) error {
 	const backOffFactor = 2
 	delay := config.Min
 	for i := 1; true; i++ {

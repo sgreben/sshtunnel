@@ -7,7 +7,8 @@ import (
 	"sync"
 )
 
-func WithContext(ctx context.Context, a net.Conn, b net.Conn) {
+// Run starts a two-way copy between the two connections.
+func Run(ctx context.Context, a net.Conn, b net.Conn) {
 	var wg sync.WaitGroup
 	ctxAB, cancelAB := context.WithCancel(ctx)
 	copyAB := make(chan error)

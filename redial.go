@@ -65,10 +65,10 @@ func ReDialContext(ctx context.Context, network, addr string, config *Config, ba
 func dialBackOff(ctx context.Context, dial func() (net.Conn, <-chan error, error), config backoff.Config) (net.Conn, <-chan error, error) {
 	var conn net.Conn
 	var connClosedCh <-chan error
-	errOut := backoff.Run(ctx, func() error {
+	errOut := config.Run(ctx, func() error {
 		var err error
 		conn, connClosedCh, err = dial()
 		return err
-	}, config)
+	})
 	return conn, connClosedCh, errOut
 }

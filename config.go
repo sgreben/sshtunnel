@@ -9,15 +9,15 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
-// Config is an SSH tunnel configuration
+// Config is an SSH tunnel configuration.
 //
 // When `SSHConn` is set to a non-nil net.Conn, that connection is reused instead of opening a new one.
 type Config struct {
-	// SSHAddr is the host:port address of the SSH server (required)
+	// SSHAddr is the host:port address of the SSH server (required).
 	SSHAddr string
-	// SSHClient is the ssh.Client config (required)
+	// SSHClient is the ssh.Client config (required).
 	SSHClient *ssh.ClientConfig
-	// SSHConn is a pre-existing connection to an SSH server (optional)
+	// SSHConn is a pre-existing connection to an SSH server (optional).
 	SSHConn net.Conn
 }
 
@@ -28,13 +28,14 @@ type ConfigAuth struct {
 	Keys     []KeySource
 }
 
-// ConfigSSHAgent is the configuration for an ssh-agent connection
+// ConfigSSHAgent is the configuration for an ssh-agent connection.
 type ConfigSSHAgent struct {
 	Addr       net.Addr
 	Passphrase *[]byte
 }
 
-// KeySource is the configuration of an ssh key
+// KeySource is the configuration of an ssh key.
+//
 // Either Signer, or one of PEM and Path must be set.
 // If PEM or Path are set and the referred key is encrypted, Passphrase must also be set.
 type KeySource struct {
@@ -44,7 +45,7 @@ type KeySource struct {
 	Signer     ssh.Signer
 }
 
-// Methods returns the configured SSH auth methods
+// Methods returns the configured SSH auth methods.
 func (a ConfigAuth) Methods() (out []ssh.AuthMethod, err error) {
 	if a.Password != nil {
 		out = append(out, ssh.Password(*a.Password))
@@ -72,7 +73,7 @@ func (a ConfigAuth) Methods() (out []ssh.AuthMethod, err error) {
 	return
 }
 
-// Keys obtains and returns all keys from the configured ssh agent
+// Keys obtains and returns all keys from the configured ssh agent.
 func (a ConfigSSHAgent) Keys() ([]ssh.Signer, error) {
 	conn, err := net.Dial(a.Addr.Network(), a.Addr.String())
 	if err != nil {
@@ -92,7 +93,7 @@ func (a ConfigSSHAgent) Keys() ([]ssh.Signer, error) {
 	return sshAgent.Signers()
 }
 
-// Key obtains and returns the configured key
+// Key obtains and returns the configured key.
 func (a KeySource) Key() (ssh.Signer, error) {
 	switch {
 	case a.Signer != nil:

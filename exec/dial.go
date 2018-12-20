@@ -90,10 +90,10 @@ func DialContext(ctx context.Context, remoteAddr string, config *Config) (net.Co
 
 func dialBackOff(ctx context.Context, dial func() (net.Conn, error), config backoff.Config) (net.Conn, error) {
 	var conn net.Conn
-	errOut := backoff.Run(ctx, func() error {
+	errOut := config.Run(ctx, func() error {
 		var err error
 		conn, err = dial()
 		return err
-	}, config)
+	})
 	return conn, errOut
 }

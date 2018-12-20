@@ -43,7 +43,7 @@ func ListenContext(ctx context.Context, laddr net.Addr, network, addr string, co
 				if !ok {
 					return
 				}
-				connpipe.WithContext(ctxConn, tunnelConn, listenerConn)
+				connpipe.Run(ctxConn, tunnelConn, listenerConn)
 			}
 		}
 	}

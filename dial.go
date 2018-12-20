@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// DialFunc is a dialler for tunneled connections
+// DialFunc is a dialler for tunneled connections.
 type DialFunc func(*ssh.Client, string) (net.Conn, error)
 
 // Dial opens a tunnelled connection to the address on the named network.
@@ -21,8 +21,7 @@ func Dial(network, addr string, config *Config) (net.Conn, <-chan error, error) 
 // DialContext opens a tunnelled connection to the address on the named network using
 // the provided context.
 //
-// See func Dial for a description of the network and address
-// parameters.
+// See func Dial for a description of the network and address parameters.
 func DialContext(ctx context.Context, network, addr string, config *Config) (net.Conn, <-chan error, error) {
 	if ctx == nil {
 		panic("nil context")

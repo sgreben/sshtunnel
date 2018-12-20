@@ -36,7 +36,7 @@ func ListenContext(ctx context.Context, laddr net.Addr, raddr string, config *Co
 		}
 		pipeDone := make(chan bool, 1)
 		go func() {
-			connpipe.WithContext(ctxConn, tunnelConn, listenerConn)
+			connpipe.Run(ctxConn, tunnelConn, listenerConn)
 			pipeDone <- true
 		}()
 		select {
