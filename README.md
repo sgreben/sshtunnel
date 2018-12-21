@@ -4,11 +4,15 @@
 
 Go library providing a dialer for SSH-tunneled TCP and Unix domain socket connections. Please note the [**limitations**](#limitations) below.
 
+The underlying package `golang.org/x/crypto/ssh` already provides a dialer `ssh.Client.Dial` that can establish `direct-tcpip` (TCP) and `direct-streamlocal` (Unix domain socket) connections via SSH.
+
+In comparison, the functions `Dial/DialContext`, `ReDial/ReDialContext`, `Listen/ListenContext` in this package provide additional convenience features such as redialling dropped connections, and serving the tunnel locally.
+
+Furthermore, a wrapper [`github.com/sgreben/sshtunnel/exec`](http://godoc.org/github.com/sgreben/sshtunnel/exec) around (`exec`'d) external clients, with a similar interface as the native client, is provided.
 
 - [Get it](#get-it)
 - [Use it](#use-it)
 	- [Docs](#docs)
-	- [If you have an existing SSH connection...](#if-you-have-an-existing-ssh-connection)
 	- [Toy example (native)](#toy-example-native)
 	- [Toy example (external client)](#toy-example-external-client)
 	- [Bigger examples](#bigger-examples)
@@ -30,12 +34,6 @@ import "github.com/sgreben/sshtunnel"
 
 [![](https://godoc.org/github.com/sgreben/sshtunnel?status.svg)](http://godoc.org/github.com/sgreben/sshtunnel)
 
-
-### If you have an existing SSH connection...
-
-You can directly use the [`sshtunnel.DialTCP` and `sshtunnel.DialUnix` DialFuncs](https://godoc.org/github.com/sgreben/sshtunnel#DialFunc) to obtain a `net.Conn` that goes through the tunnel.
-
-The other functions (`Dial/DialContext`, `ReDial/ReDialContext`, `Listen/ListenContext`) provide additional convenience features such as redialling dropped connections, or serving the tunnel locally.
 
 ### Toy example (native)
 
